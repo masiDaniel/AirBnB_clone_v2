@@ -2,17 +2,18 @@
 """Fabric script that generates a .tgz archive
 from the contents of the web_static folder"""
 from time import strftime
-from invoke import task
+from fabric.api import local, task
 
 @task
-def do_pack(c):
+def do_pack():
     """Function to compress files"""
     file = strftime("%Y%m%d%H%M%S")
     try:
-        c.run("mkdir -p versions")
-        c.run(f"tar -czvf versions/web_static_{file}.tgz web_static/")
+        local("mkdir -p versions")
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(file))
 
-        print(f"versions/web_static_{file}.tgz")
+        return "versions/web_static_{}.tgz".format(file)
 
     except Exception as e:
         return None
