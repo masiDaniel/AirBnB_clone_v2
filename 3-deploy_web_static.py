@@ -2,10 +2,11 @@
 """Fabric script that distributes an archive to your web servers"""
 import os
 from datetime import datetime
+from time import strftime
 from fabric.api import env, local, put, run, runs_once
 
 
-env.hosts = ["54.196.41.2", "	35.153.50.139"]
+env.hosts = ["54.196.41.2", "35.153.50.139"]
 
 
 def do_deploy(archive_path):
@@ -33,3 +34,23 @@ def do_deploy(archive_path):
     except Exception:
         success = False
     return success
+
+def do_pack():
+    """Function to compress files"""
+    file = strftime("%Y%m%d%H%M%S")
+    try:
+        local("mkdir -p versions")
+        local("tar -czvf versions/web_static_{}.tgz web_static/"
+              .format(file))
+
+        return "versions/web_static_{}.tgz".format(file)
+
+    except Exception as e:
+        return None
+
+
+def deploy():
+    """Archives and deploys the static files to the host servers.
+    """
+    archive_path = do_pack()
+    return do_deploy(archive_path) if archive_path else False

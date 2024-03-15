@@ -2,9 +2,9 @@
 """Fabric script that generates a .tgz archive
 from the contents of the web_static folder"""
 from time import strftime
-from fabric.api import local, task
+from fabric.api import local
 
-@task
+
 def do_pack():
     """Function to compress files"""
     file = strftime("%Y%m%d%H%M%S")
