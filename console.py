@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 """ Console Module """
-
+import os
 import cmd
 import sys
-import re
-import os
 import uuid
-from datetime import datetime
-
+import datetime
+import re
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -80,7 +78,7 @@ class HBNBCommand(cmd.Cmd):
                 if pline:
                     # check for *args or **kwargs
                     if pline[0] == '{' and pline[-1] == '}'\
-                            and type(eval(pline)) is dict:
+                            and type(eval(pline)) == dict:
                         _args = pline
                     else:
                         _args = pline.replace(',', '')
@@ -146,11 +144,11 @@ class HBNBCommand(cmd.Cmd):
                     str_v = param_match.group('t_str')
                     float_v = param_match.group('t_float')
                     int_v = param_match.group('t_int')
-                    if float_v is not None:
+                    if float_v != None:
                         obj_kwargs[key_name] = float(float_v)
-                    if int_v is not None:
+                    if int_v != None:
                         obj_kwargs[key_name] = int(int_v)
-                    if str_v is not None:
+                    if str_v != None:
                         obj_kwargs[key_name] = str_v[1:-1].replace('_', ' ')
         else:
             class_name = args
@@ -164,9 +162,9 @@ class HBNBCommand(cmd.Cmd):
             if not hasattr(obj_kwargs, 'id'):
                 obj_kwargs['id'] = str(uuid.uuid4())
             if not hasattr(obj_kwargs, 'created_at'):
-                obj_kwargs['created_at'] = str(datetime.now())
+                obj_kwargs['created_at'] = datetime.now()
             if not hasattr(obj_kwargs, 'updated_at'):
-                obj_kwargs['updated_at'] = str(datetime.now())
+                obj_kwargs['updated_at'] = datetime.now()
             new_instance = HBNBCommand.classes[class_name](**obj_kwargs)
             new_instance.save()
             print(new_instance.id)
@@ -177,7 +175,6 @@ class HBNBCommand(cmd.Cmd):
                     setattr(new_instance, key, value)
             new_instance.save()
             print(new_instance.id)
-
 
     def help_create(self):
         """ Help information for the create method """
@@ -240,7 +237,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -259,11 +256,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -276,7 +273,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage.all().items():
+        for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
@@ -372,7 +369,6 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
-
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
